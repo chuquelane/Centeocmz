@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html  >
+<head>
+  <!-- Site made with Mobirise Website Builder v5.3.5, https://mobirise.com -->
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="generator" content="Mobirise v5.3.5, mobirise.com">
+  <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
+  <link rel="shortcut icon" href="assets/images/sla-2018-04-4-80x86.png" type="image/x-icon">
+  <meta name="description" content="Métodos de observação e análise de fenómenos oceanográficos, são apresentados incluindo tutoriais e exemplos práticos.
+
+O presente tutorial destina-se a apresentar o passo a passo de um processo simples de leitura e processamento de dados meteorologicos e oceanograficos em Matlab. A cada passo serao fornecidos comentarios didaticos de modo a que o usuario tenha total compreencao dos comandos usados durante o processo. Neste tutorial serao usados dados de vento no canal de mocambique durante o mes de abril de 2019. Entretanto, nao sera apresentado o processo de aquisicao dos dados. Pode obter o ficehiros matlab usados neste tutorial, clicando em c_brewer, m_map, dateconv, tutorial, dados de vento ERA5 Abrirl de 2019.">
+  
+  
+  <title>Visualizacao de dados de vento do ERA5 em netcdf</title>
+  <link rel="stylesheet" href="assets/tether/tether.min.css">
+  <link rel="stylesheet" href="assets/bootstrap/css/bootstrap.min.css">
+  <link rel="stylesheet" href="assets/bootstrap/css/bootstrap-grid.min.css">
+  <link rel="stylesheet" href="assets/bootstrap/css/bootstrap-reboot.min.css">
+  <link rel="stylesheet" href="assets/animatecss/animate.css">
+  <link rel="stylesheet" href="assets/dropdown/css/style.css">
+  <link rel="stylesheet" href="assets/socicon/css/styles.css">
+  <link rel="stylesheet" href="assets/theme/css/style.css">
+  <link rel="preload" href="https://fonts.googleapis.com/css?family=Jost:100,200,300,400,500,600,700,800,900,100i,200i,300i,400i,500i,600i,700i,800i,900i&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Jost:100,200,300,400,500,600,700,800,900,100i,200i,300i,400i,500i,600i,700i,800i,900i&display=swap"></noscript>
+  <link rel="preload" as="style" href="assets/mobirise/css/mbr-additional.css"><link rel="stylesheet" href="assets/mobirise/css/mbr-additional.css" type="text/css">
+  
+  
+  
+  
+</head>
+<body>
+  
+  <section class="menu menu1 cid-szFTyeRbZ8" once="menu" id="menu1-28">
+    
+
+    <nav class="navbar navbar-dropdown navbar-fixed-top navbar-expand-lg">
+        <div class="container-fluid">
+            <div class="navbar-brand">
+                <span class="navbar-logo">
+                    <a href="https://mobiri.se">
+                        <img src="assets/images/sla-2018-04-4-80x86.png" alt="Mobirise" style="height: 3rem;">
+                    </a>
+                </span>
+                <span class="navbar-caption-wrap"><a class="navbar-caption text-black text-primary display-7" href="index.html">CenteOc</a></span>
+            </div>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+                <div class="hamburger">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav nav-dropdown" data-app-modern-menu="true"><li class="nav-item"><a class="nav-link link text-black text-primary display-4" href="index.html">Início</a></li>
+                    <li class="nav-item"><a class="nav-link link text-black display-4" href="https://mobiri.se">
+                            Serviços</a></li>
+                    <li class="nav-item"><a class="nav-link link text-black text-primary display-4" href="sobre-nos.html">Sobre nós</a>
+                    </li></ul>
+                <div class="icons-menu">
+                    <a class="iconfont-wrapper" href="https://mobiri.se" target="_blank">
+                        <span class="p-2 mbr-iconfont socicon-facebook socicon"></span>
+                    </a>
+                    <a class="iconfont-wrapper" href="https://mobiri.se" target="_blank">
+                        <span class="p-2 mbr-iconfont socicon-twitter socicon"></span>
+                    </a>
+                    <a class="iconfont-wrapper" href="https://mobiri.se" target="_blank">
+                        <span class="p-2 mbr-iconfont socicon-instagram socicon"></span>
+                    </a>
+                    
+                </div>
+                <div class="navbar-buttons mbr-section-btn"><a class="btn btn-black display-4" href="https://mobiri.se">en</a></div>
+            </div>
+        </div>
+    </nav>
+</section>
+
+<section class="content5 cid-szFTXImOI6" id="content5-2b">
+    
+    <div class="container-fluid">
+        <div class="row justify-content-center">
+            <div class="col-md-12 col-lg-10">
+                
+                <h4 class="mbr-section-subtitle mbr-fonts-style mb-4 display-5">Algoritmo para visualizacao de dados de vento do ERA5 em netcdf</h4>
+                <p class="mbr-text mbr-fonts-style display-7">O presente tutorial destina-se a apresentar o passo a passo de um processo simples de leitura e processamento de dados meteorologicos e&nbsp;oceanograficos em Matlab. A cada passo serao fornecidos comentarios&nbsp;didaticos de modo a que o usuario tenha total compreencao dos comandos&nbsp;usados durante o processo. Neste tutorial serao usados dados de vento no&nbsp;canal de mocambique durante o mes de abril de 2019. Entretanto, nao sera&nbsp;apresentado o processo de aquisicao dos dados. Pode obter o ficehiros matlab usados neste tutorial, clicando em <strong><em>c_brewer, m_map, dateconv, tutorial, dados de vento ERA5 Abrirl de 2019.</em></strong><br><br>O primeiro passo, como regra geral, destina-se a preparar o ambiente de trabalho, e a janela de comandos. Sao usados os seguintes comandos: clc, clear, close all.<br><br>clc; clear; close all;<br><br><br>O segundo passo e' a indicacao do directorio em que se encontram os dados: E' usado o comando cd. Os dados usados neste tutorial localizan-se numa pasta chamada MATLAB na pasta dos Documents no disco C: ('C:\Users\Ricardo Mapulende\Documents\MATLAB\Tutorial')<br><br><br>cd('C:\Users\Ricardo Mapulende\Documents\MATLAB\Tutorial')<br><br>Em seguida por uma questao de organizacao, nomea-se o ficheiro netcdf que&nbsp;contem os dados, dando nome de uma variavel, por exemplo <em><strong>f</strong></em>.<br><br><br>f = ('Vento_1_03_2019.nc');<br><br>Depois na janela de comandos, usando o comando ncdisp, analisa-se a&nbsp;estrutura do arquivo netcdfm, escreve-se ncdisp(f) na janela de comandos.
+<br>
+<br>O ficheiro usado no presente tutorial tem uma serie temporal de 30 dias,&nbsp;das seguintes variaveis: time, Longitude, Latitude, u10, v10 e WindSpeed. As variaveis tempo, Longitude e Latitude representam as dimensoes, e as restantes sao as variaveis que interressam a sua representacao.
+<br>
+<br>Em seguida faz-se a leitura dos dados. Usa-se o comando ncread. Presta atenccao na estrutura do comando.<br><br>% longitude
+<br>lon = ncread (f, 'Longitude');
+<br>
+<br>% Latitude
+<br>lat = ncread (f, 'Latitude');
+<br>
+<br>% Tempo
+<br>time = ncread (f, 'time');
+<br>
+<br>% Velocidade do vento na direcao x (u10)
+<br>u_wind = ncread(f, 'u10');
+<br>
+<br>% Velocidade do vento na direcao y (v10)
+<br>v_wind = ncread(f, 'v10');
+<br>
+<br>% Modulo da velocidade do vento (WindSpeed)
+<br>windspeed = ncread(f, 'WindSpeed');<br><br>O passo a seguir e' a criacao de grelhas dos dados, visando a sua&nbsp;melhor representacao num mapa. Primeiro e' selecionada a data e a&nbsp;hora que se pretende mostrar. usa-se o comando "find". A matriz do tempo nos dados usados no presente tutorial esta em segundos, por este motivo&nbsp;e' necessario que se converta a data que pretende-se achar para segundos.<br><br>Nesta mesma pagina web esta disponivel um ficheiro com o nome "dateconv.m", este e' uma funcao do matlab desenhada para conerter um intervalo de&nbsp;tempo entre datas e hora, em segundos.&nbsp;Para usar basta digitar o comando&nbsp;dateconv(aaaa,mm,dd,hh,min,ss, AAAA,MM,DD,HH,MIN,SS),&nbsp;onde "aaaa,mm,dd,hh,min,ss" e' a primeira data ou data inicial, e&nbsp;"AAAA,MM,DD,HH,MIN,SS" e' a data final. Para mais informacao digita na&nbsp;janela de comando "help dateconv".
+<br><br>No presente tutorial tomou-se como uma data a representar o dia 1 de Marco de 2019 as 10 horas (2019,03,1,10,00,00).  Os dados usados neste&nbsp;tutorial fazem parte de uma serie temporal que comecou em&nbsp;1970-01-01 00:00:00.000, por isso tomou-se como date inicial.<br><br>Time = dateconv(1970,01,01,00,00,00, 2019,03,1,10,00,00);
+<br>
+<br>depois e' usado o comando "find"
+<br>
+<br>i = find(time == Time);<br><br>Depois sao selecionados os dados que pertecem ao tempo pretendido. A&nbsp;extrutura dos dados e' de tal modo que a primeira dimensao refere-se a Longitude, a sgunda e' a latitude e a terceira e' o tempo. Usando o comando squeeze seleciona-se os dados referentes ao tempo requeride:<br><br>uwind = squeeze(u_wind(:,:,i));
+<br>vwind = squeeze(v_wind(:,:,i));
+<br>U = squeeze(windspeed(:,:,i));
+<br>
+<br>Depois de selecionados os dados, o proximo passo e' colocalos numa mesma grelha (griddata):
+<br>
+<br>% Grid da latitude e longitude
+<br>[x,y] = meshgrid(lon,lat);
+<br>
+<br>% Grid dos dados do vento
+<br>[UWIND] = griddata(double(lat),double(lon),double(uwind),double(y),double(x),'linear');
+<br>
+<br>[VWIND] = griddata(double(lat),double(lon),double(vwind),double(y),double(x),'linear');
+<br>
+<br>SPEED = griddata(double(lat),double(lon),double(U),double(y),double(x),'linear');<br><br>E o ultimo passo e' a representacao dos dados num mapa. Para o efeito&nbsp;existem diversos comandos, dentre os quais estao o "quiver" e o "pcolor". Para uma melhor representatividade, foi criado um pacote chamado "m_map", que usa os sistema de posicionamento geografico e faz a representacao dos dados. O m_map pode ser baixado na sua fonte oficial assim como apartir desta pagina web. Para usa-lo basta indicar o directorio em que se econtram-se os ficheiros do <em><strong>m_map</strong></em> usado o comando "addpath"<br><br>addpath('C:\Users\Ricardo Mapulende\Documents\MATLAB\Tutorial\m_map');
+<br>
+<br>Depois o passo a seguir e' criar um ambiente para o plot (representacao)&nbsp;dos dados:
+<br>
+<br>figure; clf; set(gcf, 'color', 'white');
+<br>
+<br>Ao criar a projecao e' necessario indicar o tipo de projecao e a&nbsp;localizacao geografica da area em que pretende representar
+<br>
+<br>m_proj('mercator','lon',[32 49],'lat',[-28 -10]);
+<br>
+<br>Depois faz-se a representacao, a intensidade do vento WINDSPEED sera representada usando o "m_pcolor", e a direcao do vento "UWIND" e "VWIND",&nbsp;serao representados por vectores usando o comando "m_quiver"
+<br>
+<br>h1 = m_pcolor(x, y, SPEED); shading interp;
+<br>
+<br>hold on; 
+<br>
+<br>h2 = m_quiver(x(1:5:end), y(1:5:end), UWIND(1:5:end),VWIND(1:5:end), 1, 'k')
+<br>
+<br>O comando "hold on" acrescenta outros graficos na mesma figura.
+<br><br>O comando "shading interp" e' usado para interpolar os dados que foram&nbsp;representados na figura, deixando a figura com melhor estetica.
+<br>
+<br>Em segida sao colocadas as "map grids", e a linha de costa dos&nbsp;continentes, usando os comandos m_gshhs_c (escolhe-se como se pretende&nbsp;representar, ver a descricao em "help m_gshhs_c"). O m_grid cria uma grelha no mapa (ver a descricao em "help m_grid"). O m_gshhs_f preenche a linha de costa para uma dada regiao desejada&nbsp;(ver a descricao em "help m_gshhs_f"). O comando "colorbar" insere a barra de cores dos dados que foram&nbsp;representados. O comando caxis define os limites da barra de corres
+<br>
+<br>m_gshhs_c('patch',[0.7 0.7 0.7]); 
+<br>m_grid('linewi',1.3,'tickdir','out');
+<br>m_gshhs_f('patch',[.7 .7 .7]); 
+<br>h = colorbar
+<br>caxis(h,[0 10])
+<br>
+<br>O passo a seguir e' a custumisacao do grafico, acrescentando a legenda da&nbsp;barra de corres, o titulo do grafico/mapa, a descricao dos eixos (ylabel&nbsp;e xlabel) e muito mais.
+<br>
+<br>set(get(h,'ylabel'),'String','SST (^ o C)');  
+<br>title('Velocidade do vento no Canal de Mocambique no dia 10 de Maio de 2019')
+<br>ylabel('latitude (graus)'); xlabel('longitude (graus)');
+<br>
+<br>Pode-se escolher o estilo de cores com que se pretende representar no&nbsp;mapa. usando o "cbrewer" pode-se escolher as cores. Primeiro deve se&nbsp;adicionar o directorio em que se encontra o cbrewer, e depois inserir o&nbsp;comando que vai definir as cores apois adicionar o cbrewer pode saber&nbsp;mais sobre ele digitando na janela de comandos "help cbrewer". Por fim&nbsp;com o comando "colormap" podemos aplicar no mapa a escala de cores&nbsp;definida pelo cbrewer.
+<br>
+<br>addpath('C:\Users\Ricardo Mapulende\Documents\MATLAB\Tutorial\cbrewer');
+<br>
+<br>CT = cbrewer('seq', 'YlOrRd', 40);
+<br>colormap(CT)
+<br><br>O cbrewer pode ser baixado no site oficial assim como nesta pagina web, clicando <strong><em>aqui</em></strong>.
+<br>
+<br>Mais tutoriais ainda serao produzidos, fique atento para mais actualizacoes. Em caso de duvidas, comentarios ou recomendacoes, pode enviar uma mensagem pelo correio electronico: centeocmz@gmail.com .
+<br>
+<br>%%%%%%%%%%%%%% Os melhores cumprimentos da Equioa do CenteOc %%%%%%%%%%%%%%%%%<br></p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="footer7 cid-szFTyke3KY" once="footers" id="footer7-2a">
+
+    
+
+    
+
+    <div class="container">
+        <div class="media-container-row align-center mbr-white">
+            <div class="col-12">
+                <p class="mbr-text mb-0 mbr-fonts-style display-7">CenteOc | © 2021</p>
+            </div>
+        </div>
+    </div>
+</section><section style="background-color: #fff; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif; color:#aaa; font-size:12px; padding: 0; align-items: center; display: flex;"><a href="https://mobirise.site/y" style="flex: 1 1; height: 3rem; padding-left: 1rem;"></a><p style="flex: 0 0 auto; margin:0; padding-right:1rem;">Created with <a href="https://mobirise.site/b" style="color:#aaa;">Mobirise</a> website theme</p></section><script src="assets/web/assets/jquery/jquery.min.js"></script>  <script src="assets/popper/popper.min.js"></script>  <script src="assets/tether/tether.min.js"></script>  <script src="assets/bootstrap/js/bootstrap.min.js"></script>  <script src="assets/smoothscroll/smooth-scroll.js"></script>  <script src="assets/viewportchecker/jquery.viewportchecker.js"></script>  <script src="assets/dropdown/js/nav-dropdown.js"></script>  <script src="assets/dropdown/js/navbar-dropdown.js"></script>  <script src="assets/touchswipe/jquery.touch-swipe.min.js"></script>  <script src="assets/theme/js/script.js"></script>  
+  
+  
+ <div id="scrollToTop" class="scrollToTop mbr-arrow-up"><a style="text-align: center;"><i class="mbr-arrow-up-icon mbr-arrow-up-icon-cm cm-icon cm-icon-smallarrow-up"></i></a></div>
+    <input name="animation" type="hidden">
+  </body>
+</html>
